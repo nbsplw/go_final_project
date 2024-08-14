@@ -25,6 +25,10 @@ type Config struct {
 	DB struct {
 		Path string `env:"TODO_DBFILE" envDefault:"./scheduler.db"`
 	}
+	Auth struct {
+		Password string `env:"TODO_PASSWORD" envDefault:"1"`
+		Key      string `env:"TODO_AUTH_KEY" envDefault:"test"`
+	}
 }
 
 var s *Config

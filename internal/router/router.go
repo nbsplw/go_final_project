@@ -9,12 +9,16 @@ func SetupRoutes(main *fiber.App) {
 	main.Static("/", "./web")
 	api := main.Group("/api")
 	{
-		api.Post("/task", controllers.AddTask)
-		api.Get("/task", controllers.GetTask)
-		api.Put("/task", controllers.UpdateTask)
-		api.Delete("/task", controllers.DeleteTask)
-		api.Post("/task/done", controllers.DoneTask)
-		api.Get("/tasks", controllers.GetTasks)
 		api.Get("/nextdate", controllers.NextDate)
+		api.Post("/signin", controllers.SignIn)
+		authGroup := api.Group("")
+		{
+			authGroup.Post("/task", controllers.AddTask)
+			authGroup.Get("/task", controllers.GetTask)
+			authGroup.Put("/task", controllers.UpdateTask)
+			authGroup.Delete("/task", controllers.DeleteTask)
+			authGroup.Post("/task/done", controllers.DoneTask)
+			authGroup.Get("/tasks", controllers.GetTasks)
+		}
 	}
 }

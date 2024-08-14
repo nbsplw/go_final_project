@@ -85,7 +85,7 @@ func GetTask(c *fiber.Ctx) error {
 	if task == nil {
 		task = &tasks.Task{}
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"tasks": task})
+	return c.Status(fiber.StatusOK).JSON(task)
 }
 
 func UpdateTask(c *fiber.Ctx) error {
@@ -121,7 +121,7 @@ func UpdateTask(c *fiber.Ctx) error {
 		logger.Get().Error("cannot update task", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(common.ErrorResponse{Error: "cannot update task"})
 	}
-	return c.SendStatus(fiber.StatusOK)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
 }
 
 func DoneTask(c *fiber.Ctx) error {
@@ -137,7 +137,7 @@ func DoneTask(c *fiber.Ctx) error {
 		logger.Get().Error("cannot done task", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(common.ErrorResponse{Error: "cannot done task"})
 	}
-	return c.SendStatus(fiber.StatusOK)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
 }
 
 func DeleteTask(c *fiber.Ctx) error {
@@ -153,7 +153,7 @@ func DeleteTask(c *fiber.Ctx) error {
 		logger.Get().Error("cannot delete task", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(common.ErrorResponse{Error: "cannot delete task"})
 	}
-	return c.SendStatus(fiber.StatusOK)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
 }
 
 func NextDate(c *fiber.Ctx) error {

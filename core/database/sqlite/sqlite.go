@@ -9,7 +9,9 @@ import (
 	"main/core/config"
 	"main/core/logger"
 	"main/internal/models/tasks"
+	"main/pkg"
 	"os"
+	"time"
 )
 
 const dbDriver = "sqlite3"
@@ -203,21 +205,21 @@ func (s *Storage) DoneTask(id string) error {
 		return ErrNoSuchTask
 	}
 
-	//if task.Repeat == "" {
-	_, err := s.db.Exec("DELETE FROM scheduler WHERE id = ?", id)
-	if err != nil {
-		return errors.New("задача не найдена")
+	if task.Repeat == "" {
+		_, err := s.db.Exec("DELETE FROM scheduler WHERE id = ?", id)
+		if err != nil {
+			return errors.New("задача не найдена")
+		}
+	} else {
+		date, err := pkg.NextDate(time.Now(), task.Date, task.Repeat)
+		if err != nil {
+			return err
+		}
+		task.Date = date
+		if err = s.UpdateTask(task); err != nil {
+			return err
+		}
 	}
-	//} else {
-	//	date, err := task.NextDate(time.Now(), task.Date, task.Repeat)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	task.Date = date
-	//	if err = s.UpdateTask(task); err != nil {
-	//		return err
-	//	}
-	//}
 
 	return nil
 }
