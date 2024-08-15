@@ -45,7 +45,7 @@ func GetTasks(c *fiber.Ctx) error {
 	}
 	if c.Query("search") != "" {
 		if parsedDate, err := time.Parse("02.1.2006", c.Query("search")); err == nil {
-			resultTasks, err := sqlite.Get().TasksByDate(parsedDate.Format("20060102"))
+			resultTasks, err := sqlite.Get().TasksByDate(parsedDate.Format(common.TimeFormat))
 			if err != nil {
 				logger.Get().Info("cannot get tasks", zap.Error(err))
 				return c.Status(fiber.StatusBadRequest).JSON(common.ErrorResponse{Error: "cannot get tasks"})
@@ -157,7 +157,7 @@ func DeleteTask(c *fiber.Ctx) error {
 }
 
 func NextDate(c *fiber.Ctx) error {
-	now, err := time.Parse("20060102", c.Query("now"))
+	now, err := time.Parse(common.TimeFormat, c.Query("now"))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(common.ErrorResponse{Error: err.Error()})
 	}

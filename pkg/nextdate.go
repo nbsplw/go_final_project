@@ -9,12 +9,14 @@ import (
 	"time"
 )
 
+const timeFormat = "20060102"
+
 func NextDate(now time.Time, date string, repeat string) (string, error) {
 	if repeat == "" {
 		return "", errors.New("repeat is required")
 	}
 
-	t, err := time.Parse("20060102", date)
+	t, err := time.Parse(timeFormat, date)
 	if err != nil {
 		return "", err
 	}
@@ -39,7 +41,7 @@ func addYear(t time.Time, now time.Time) (string, error) {
 			break
 		}
 	}
-	return t.Format("20060102"), nil
+	return t.Format(timeFormat), nil
 }
 
 func addDays(t time.Time, now time.Time, repeat string) (string, error) {
@@ -60,7 +62,7 @@ func addDays(t time.Time, now time.Time, repeat string) (string, error) {
 				break
 			}
 		}
-		return t.Format("20060102"), nil
+		return t.Format(timeFormat), nil
 	}
 }
 
@@ -106,7 +108,7 @@ func AddWeeks(t time.Time, now time.Time, repeat string) (string, error) {
 	for {
 		t = t.AddDate(0, 0, 1)
 		if t.After(now) && int(t.Weekday()) == nextWeekDay {
-			return t.Format("20060102"), nil
+			return t.Format(timeFormat), nil
 		}
 	}
 }
@@ -121,17 +123,17 @@ func AddMonths(t time.Time, now time.Time, repeat string) (string, error) {
 	repSlice := strings.Split(repeat, " ")
 
 	if len(repSlice) == 2 {
-		listOfDays, err = getNextDate(now, t.Format("20060102"), repeat)
+		listOfDays, err = getNextDate(now, t.Format(timeFormat), repeat)
 		if err != nil {
 			return "", err
 		}
 	} else if len(repSlice) == 3 {
-		listOfDays = getNextMonthDate(now, t.Format("20060102"), repeat)
+		listOfDays = getNextMonthDate(now, t.Format(timeFormat), repeat)
 	} else {
 		return "", errors.New("incorrect repeat interval")
 	}
 
-	return listOfDays.Format("20060102"), nil
+	return listOfDays.Format(timeFormat), nil
 }
 
 func getNextMonthDate(now time.Time, target string, rule string) time.Time {
@@ -149,7 +151,7 @@ func getNextMonthDate(now time.Time, target string, rule string) time.Time {
 		months[i], _ = strconv.Atoi(month)
 	}
 
-	targetTime, _ := time.Parse("20060102", target)
+	targetTime, _ := time.Parse(timeFormat, target)
 	var nearestDate time.Time
 
 	for {
@@ -185,7 +187,7 @@ func getNextMonthDate(now time.Time, target string, rule string) time.Time {
 
 func getNextDate(now time.Time, target string, rule string) (time.Time, error) {
 
-	targetTime, _ := time.Parse("20060102", target)
+	targetTime, _ := time.Parse(timeFormat, target)
 
 	ruleParts := strings.SplitN(rule, " ", 2)
 	if len(ruleParts) != 2 {

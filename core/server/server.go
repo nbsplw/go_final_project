@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"go.uber.org/zap"
 	"main/core/config"
+	"main/core/database/sqlite"
 	"main/core/logger"
 	"main/internal/router"
 	"time"
@@ -29,4 +30,8 @@ func Run() {
 		logger.Get().Fatal(`app listen failed`, zap.Error(err))
 		return
 	}
+}
+
+func Shutdown() {
+	sqlite.Get().Close()
 }

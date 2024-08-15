@@ -10,7 +10,7 @@ import (
 
 var secret []byte
 
-func init() {
+func Init() {
 	secret = []byte(config.Get().Auth.Key)
 }
 

@@ -39,6 +39,15 @@ func Get() *Storage {
 	return &db
 }
 
+func (s *Storage) Close() error {
+	if s.db != nil {
+		if err := s.db.Close(); err != nil {
+			panic(err)
+		}
+	}
+	return nil
+}
+
 func (s *Storage) initDB() error {
 	if err := createDB(config.Get().DB.Path); err != nil {
 		return err
@@ -176,6 +185,9 @@ func (s *Storage) SearchTasks(search string, offset int) ([]tasks.Task, error) {
 		}
 		result = append(result, task)
 	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -195,6 +207,9 @@ func (s *Storage) TasksByDate(date string) ([]tasks.Task, error) {
 		}
 		result = append(result, task)
 	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -206,9 +221,8 @@ func (s *Storage) DoneTask(id string) error {
 	}
 
 	if task.Repeat == "" {
-		_, err := s.db.Exec("DELETE FROM scheduler WHERE id = ?", id)
-		if err != nil {
-			return errors.New("задача не найдена")
+		if err := db.DeleteTask(task.ID); err != nil {
+			return err
 		}
 	} else {
 		date, err := pkg.NextDate(time.Now(), task.Date, task.Repeat)
@@ -220,20 +234,20 @@ func (s *Storage) DoneTask(id string) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
 func (s *Storage) DeleteTask(id string) error {
-	var exists bool
-	err := s.db.QueryRow("SELECT exists(SELECT 1 FROM scheduler WHERE id=?)", id).Scan(&exists)
-	if err != nil || !exists {
-		return ErrNoSuchTask
-	}
-
-	if _, err = s.db.Exec("DELETE FROM scheduler WHERE id = ?", id); err != nil {
+	res, err := s.db.Exec("DELETE FROM scheduler WHERE id = ?", id)
+	if err != nil {
 		return err
 	}
-
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrNoSuchTask
+	}
 	return nil
 }

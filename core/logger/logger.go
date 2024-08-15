@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-var Logger *zap.Logger
+var logger *zap.Logger
 
 func Init() {
 	var zapConfig zap.Config
@@ -36,13 +36,13 @@ func Init() {
 		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), logLevel),
 	)
 
-	Logger = zap.New(loggerCore, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	Logger.Info("logger: init")
+	logger = zap.New(loggerCore, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	logger.Info("logger: init")
 }
 
 func Get() *zap.Logger {
-	if Logger == nil {
+	if logger == nil {
 		Init()
 	}
-	return Logger
+	return logger
 }
